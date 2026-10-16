@@ -1,0 +1,123 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://demo/main.gd" id="1"]
+[ext_resource type="Script" path="res://demo/player.gd" id="2"]
+[ext_resource type="Script" path="res://addons/pipalo_lite/pipalo_safe_area.gd" id="3"]
+[ext_resource type="Script" path="res://addons/pipalo_lite/pipalo_joystick.gd" id="4"]
+[ext_resource type="Script" path="res://addons/pipalo_lite/pipalo_button.gd" id="5"]
+[ext_resource type="Script" path="res://demo/level.gd" id="8"]
+
+[sub_resource type="RectangleShape2D" id="shape_player"]
+size = Vector2(44, 56)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Level" type="StaticBody2D" parent="."]
+script = ExtResource("8")
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(640, 520)
+script = ExtResource("2")
+
+[node name="Shape" type="CollisionShape2D" parent="Player"]
+shape = SubResource("shape_player")
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="SafeArea" type="MarginContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3")
+
+[node name="Layout" type="Control" parent="UI/SafeArea"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Device" type="Label" parent="UI/SafeArea/Layout"]
+layout_mode = 1
+offset_top = 70.0
+offset_right = 600.0
+offset_bottom = 104.0
+theme_override_colors/font_color = Color(0.65, 0.68, 0.75, 1)
+theme_override_font_sizes/font_size = 20
+
+[node name="Joystick" type="Control" parent="UI/SafeArea/Layout"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -300.0
+offset_right = 420.0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("4")
+mode = 1
+radius = 95.0
+action_left = &"move_left"
+action_right = &"move_right"
+action_up = &"move_up"
+action_down = &"move_down"
+color = Color(0.56, 0.94, 0.6, 1)
+
+[node name="Jump" type="Control" parent="UI/SafeArea/Layout"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -170.0
+offset_right = -20.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("5")
+action = &"jump"
+text = "Jump"
+color = Color(0.56, 0.94, 0.6, 1)
+
+[node name="Dash" type="Control" parent="UI/SafeArea/Layout"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -290.0
+offset_top = -120.0
+offset_right = -190.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("5")
+action = &"dash"
+text = "Dash"
+font_size = 22
+color = Color(0.96, 0.66, 0.26, 1)
+
+[node name="Pause" type="Control" parent="UI/SafeArea/Layout"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -64.0
+offset_bottom = 64.0
+grow_horizontal = 0
+mouse_filter = 2
+script = ExtResource("5")
+action = &"pause"
+text = "II"
+shape = 1
+font_size = 22
+
