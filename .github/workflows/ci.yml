@@ -1,0 +1,47 @@
+name: CI
+
+# Every push to main and every pull request: the test suite in Godot itself,
+# then the buyer check (the repository archive as the Godot Asset Library hands
+# it out, unpacked into a fresh project with the plugin enabled; the editor
+# must open it without errors and the tests must pass there).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      # The official Godot build the addon is tested with. The SHA-512 is the
+      # one in the release's own SHA512-SUMS.txt, so a changed download fails
+      # the run instead of running.
+      GODOT_VERSION: 4.7.1-stable
+      GODOT_ZIP_SHA512: 4ccdab7a48eeccbe8819a2fc1f6262f8d72065d98601bcb3743fcbd7ebd39f373758a788ee3293a05ec5b2c48538266c437404312e372225cd2df273945a2de9
+    steps:
+      # Actions are pinned to commit hashes, so a moved tag cannot change what runs here.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install Godot
+        run: |
+          zip="Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/$zip" \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/$zip"
+          echo "$GODOT_ZIP_SHA512  $RUNNER_TEMP/$zip" | sha512sum --check --strict
+          mkdir -p "$RUNNER_TEMP/godot"
+          unzip -q "$RUNNER_TEMP/$zip" -d "$RUNNER_TEMP/godot"
+          # Self-contained mode keeps the editor's settings and cache next to the binary.
+          touch "$RUNNER_TEMP/godot/._sc_"
+          echo "GODOT=$RUNNER_TEMP/godot/Godot_v${GODOT_VERSION}_linux.x86_64" >> "$GITHUB_ENV"
+      - name: Godot version
+        run: '"$GODOT" --headless --version'
+      - name: Tests
+        run: make test GODOT="$GODOT"
+      - name: Buyer check
+        run: make buyer-check GODOT="$GODOT"
