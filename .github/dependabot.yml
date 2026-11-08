@@ -1,0 +1,23 @@
+# Dependency updates, proposed rather than applied. The addon has no package
+# dependencies; the only thing to keep current is the actions CI runs. The
+# Godot version in the workflow is pinned with its checksum and is moved by
+# hand after the addon has been tested with the new release. Minor and patch
+# updates come once a week in one pull request; security updates as soon as
+# they are published.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Europe/Sofia
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        applies-to: version-updates
+        update-types: [minor, patch]
+      actions-security:
+        applies-to: security-updates
+        patterns: ['*']
